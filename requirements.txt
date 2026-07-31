@@ -1,0 +1,27 @@
+# LLM / orchestration
+langchain
+langgraph
+langchain-ollama
+
+# Vector DB + embeddings
+qdrant-client
+sentence-transformers
+fastembed
+
+# Frontend
+gradio
+
+# Data sources
+beautifulsoup4
+requests
+PyGithub
+
+# Utilities
+python-dotenv
+tiktoken
+
+# Observability
+langfuse
+
+# Testing
+pytest

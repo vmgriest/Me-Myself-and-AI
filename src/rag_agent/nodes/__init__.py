@@ -1,0 +1,1 @@
+# Individual graph node functions
