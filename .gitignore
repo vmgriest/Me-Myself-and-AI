@@ -3,6 +3,9 @@
 .venv/
 venv/
 
+# Personal bio (private) — see data/raw/bio.example.md for the template
+data/raw/bio.md
+
 # Python
 __pycache__/
 *.pyc

@@ -1,5 +1,6 @@
 # LLM / orchestration
 langchain
+langchain-text-splitters
 langgraph
 langchain-ollama
 
