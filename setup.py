@@ -1,1 +1,0 @@
-# Package installation script

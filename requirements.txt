@@ -1,8 +1,8 @@
 # LLM / orchestration
-langchain
 langchain-text-splitters
 langgraph
 langchain-ollama
+langchain-groq
 
 # Vector DB + embeddings
 qdrant-client
@@ -13,16 +13,15 @@ fastembed
 gradio
 
 # Data sources
-beautifulsoup4
 requests
 PyGithub
+tavily-python
+pypdf
 
 # Utilities
 python-dotenv
-tiktoken
 
-# Observability
-langfuse
+# Observability (LangSmith tracing — see .env's LANGCHAIN_* vars; no extra package needed beyond langchain-core)
 
 # Testing
 pytest

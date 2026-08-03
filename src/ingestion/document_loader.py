@@ -1,10 +1,14 @@
 # Loads data from multiple sources (PDF, MD, Web)
 #
-# Phase 1 only reads bio.md. load_all_sources() is the single seam later
-# phases extend (GitHub repos, scraped websites) without callers changing.
+# load_all_sources() is the single seam every source plugs into. Each
+# loader degrades gracefully (returns an empty list) when its source isn't
+# configured, so ingestion still works with just bio.md if that's all
+# that's set up.
 from langchain_core.documents import Document  # LangChain's standard text + metadata container
+from pypdf import PdfReader  # reads text out of PDF files
 
-from src import config  # for config.BIO_PATH
+from src import config  # for config.BIO_PATH / RESUME_PATH
+from src.web import github_connector, website_scraper
 
 
 def load_bio() -> list[Document]:
@@ -13,5 +17,20 @@ def load_bio() -> list[Document]:
     return [Document(page_content=text, metadata={"source": "bio.md", "source_type": "bio"})]
 
 
+def load_resume() -> list[Document]:
+    """Reads data/raw/resume.pdf (gitignored, personal document) if present."""
+    if not config.RESUME_PATH.exists():  # optional source — skip cleanly if not provided
+        return []
+
+    reader = PdfReader(config.RESUME_PATH)  # opens the PDF for text extraction
+    text = "\n".join(page.extract_text() or "" for page in reader.pages)  # join all pages' text into one string
+    return [Document(page_content=text, metadata={"source": "resume.pdf", "source_type": "resume"})]
+
+
 def load_all_sources() -> list[Document]:
-    return load_bio()  # only source in Phase 1; Phase 4 will also call github/website loaders here
+    return [
+        *load_bio(),
+        *load_resume(),
+        *github_connector.load_github_repos(),
+        *website_scraper.load_websites(),
+    ]

@@ -12,14 +12,15 @@ from src.ingestion import chunking, document_loader, embeddings, vector_store  #
 
 def run_ingestion() -> None:
     documents = document_loader.load_all_sources()  # step 1: read raw sources into Documents
-    chunks = chunking.simple_chunk(documents)  # step 2: split into smaller overlapping chunks
+    chunks = chunking.parent_child_chunk(documents)  # step 2: split into parent+child chunks; only children returned
 
     texts = [chunk.page_content for chunk in chunks]  # pull out just the text for embedding
-    vectors = embeddings.embed_documents(texts)  # step 3: turn each chunk's text into a vector
+    dense_vectors = embeddings.embed_documents(texts)  # step 3a: dense (semantic) embedding per chunk
+    sparse_vectors = embeddings.embed_sparse_documents(texts)  # step 3b: sparse (BM25/keyword) embedding per chunk
 
     client = vector_store.get_qdrant_client()  # open (or create) the local Qdrant store
-    vector_store.ensure_collection(client)  # step 4a: make sure the collection exists
-    vector_store.upsert_chunks(client, chunks, vectors)  # step 4b: write chunks + vectors into it
+    vector_store.ensure_collection(client)  # step 4a: make sure the collection (both named vectors) exists
+    vector_store.upsert_chunks(client, chunks, dense_vectors, sparse_vectors)  # step 4b: write chunks + both vectors into it
 
     print(f"Ingested {len(chunks)} chunks from {len(documents)} document(s) into {config.QDRANT_PATH}")  # summary log
 
